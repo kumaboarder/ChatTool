@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>WebSocketDemo Client</title>
+        <title>Chat Tool Client</title>
         <meta charset="UTF-8">
     </head>
     <body>
@@ -17,7 +17,14 @@
                 d.connect = function() {
                     var ws = new WebSocket("ws://localhost:8080/ChatTool/chat");
                     ws.onmessage = function(event) {
-                        printMessage("Server : " + event.data);
+                    	var messageArray = JSON.parse(event.data);
+                    	console.log(messageArray);
+                    	for (var i=0; i<messageArray.length; i++) {
+                    	    var messageObj = messageArray[i];
+                        	var message = messageObj.user + " say " + messageObj.message + " at " + messageObj.date + ".";
+                            printMessage("Server : " + message);
+                    	    console.log(messageObj);
+                    	}
                     };
                     d.webSocket = ws;
                     $("#connect").disabled = true;
@@ -28,8 +35,6 @@
                 	msgObj.message = $("#message").value;
                 	msgObj.user = $("#user").value;
                 	msgObj.date = $("#date").value;
-                	var msgArray = new Array();
-                	msgArray.push(msgObj);
                 	var jsonMessage = JSON.stringify(msgObj);
                 	console.log(jsonMessage);
 
