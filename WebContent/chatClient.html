@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chat Tool Client</title>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <script type="text/javascript">
+            WebSocketDemo = {};
+            (function(d) {
+                function $(query) {
+                    return document.querySelector(query);
+                }
+                function printMessage(msg) {
+                    $("#msgbox").innerHTML += "<div>" + msg + "</div>";
+                }
+                d.connect = function() {
+                    var ws = new WebSocket("ws://localhost:8080/ChatTool/chat");
+                    ws.onmessage = function(event) {
+                    	var messageArray = JSON.parse(event.data);
+                    	console.log(messageArray);
+                    	for (var i=0; i<messageArray.length; i++) {
+                    	    var messageObj = messageArray[i];
+                        	var message = messageObj.user + " say " + messageObj.message + " at " + messageObj.date + ".";
+                            printMessage("Server : " + message);
+                    	    console.log(messageObj);
+                    	}
+                    };
+                    d.webSocket = ws;
+                    $("#connect").disabled = true;
+                    $("#send").disabled = false;
+                };
+                d.send = function() {
+                    var msgObj = new Object();
+                	msgObj.message = $("#message").value;
+                	msgObj.user = $("#user").value;
+                	msgObj.date = $("#date").value;
+                	var jsonMessage = JSON.stringify(msgObj);
+                	console.log(jsonMessage);
+
+                    d.webSocket.send(jsonMessage);
+                    printMessage("Client : " + jsonMessage);
+                };
+            }) (WebSocketDemo);
+        </script>
+        <form action="javascript:void(0);">
+            message : <input type="text" id="message" size="20" value="message">
+            user : <input type="text" id="user" size="20" value="user1">
+            date : <input type="text" id="date" size="20" value="2016/06/18">
+            <input type="button" id="connect" value="Connect" onclick="WebSocketDemo.connect();">
+            <input type="button" id="send" value="Send" onclick="WebSocketDemo.send();" disabled>
+        </form>
+        <div id="msgbox" style="border-style: solid;width: 500px;height: 400px"></div>
+    </body>
+</html>
