@@ -22,8 +22,6 @@ public class ChatServlet{
 	private static Set<Session> ses = new CopyOnWriteArraySet<>();
 	static Logger log = LoggerFactory.getLogger(ChatServlet.class);
 
-	String user = "default User";
-
 	@OnOpen
 	public void onOpen(Session session) {
 		log.debug("onOpen : " + session);
@@ -35,9 +33,11 @@ public class ChatServlet{
 		log.debug("onMessage : " + message);
 		try{
 			MessageEntity msgEntity = JSON.decode(message, MessageEntity.class);
-			this.setUser(msgEntity.getUser());
-
-			sendMessage(createMessage(message));
+			
+			List<MessageEntity> messageList = new ArrayList<>();
+			messageList.add(msgEntity);
+			
+			sendMessage(messageList);
 
 		}catch(Exception e){
 			log.error(e.getMessage(), e);
@@ -54,19 +54,8 @@ public class ChatServlet{
 		log.debug("sendMessage : " + messageList);
 		String retMessage = JSON.encode(messageList);
 
-		for (Session ses : ses) {
-			ses.getAsyncRemote().sendText(retMessage);
+		for (Session clientSession : ses) { // Renamed 'ses' to 'clientSession' to avoid shadowing static field
+			clientSession.getAsyncRemote().sendText(retMessage);
 		}
-	}
-
-	private List<MessageEntity> createMessage(String msg){
-		List<MessageEntity> ret = new ArrayList<MessageEntity>();
-		MessageEntity msgEntity = JSON.decode(msg, MessageEntity.class);
-		ret.add(msgEntity);
-		return ret;
-	}
-
-	private void setUser(String userName){
-		this.user = userName;
 	}
 }

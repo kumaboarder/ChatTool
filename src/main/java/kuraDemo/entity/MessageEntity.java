@@ -31,7 +31,11 @@ public class MessageEntity {
 	}
 	@Override
 	public String toString() {
-		return "MessageEntity [message=" + message + ", user=" + user
-				+ ", date=" + date + ", command=" + command + "]";
+		return "MessageEntity [" +
+				"message=" + message +
+				", user=" + user +
+				", date=" + date +
+				", command=" + command +
+				"]";
 	}
 }
